@@ -12,12 +12,12 @@ function Camera() {
   const height = viewRatio < 1 ? size / viewRatio : size;
 
   const camera = new THREE.OrthographicCamera(
-    width / -2, // left
-    width / 2, // right
-    height / 2, // top
-    height / -2, // bottom
-    100, // near
-    900 // far
+    width / -2,
+    width / 2, 
+    height / 2,
+    height / -2,
+    100, 
+    900 
   );
 
   camera.up.set(0, 0, 1);
@@ -166,11 +166,9 @@ const metadata = [];
 const map = new THREE.Group();
 
 function initializeMap() {
-  // Remove all rows
   metadata.length = 0;
   map.remove(...map.children);
 
-  // Add new rows
   for (let rowIndex = 0; rowIndex > -10; rowIndex--) {
     const grass = Grass(rowIndex);
     map.add(grass);
@@ -275,16 +273,13 @@ const position = {
 const movesQueue = [];
 
 function initializePlayer() {
-  // Initialize the Three.js player object
   player.position.x = 0;
   player.position.y = 0;
   player.children[0].position.z = 0;
 
-  // Initialize metadata
   position.currentRow = 0;
   position.currentTile = 0;
 
-  // Clear the moves queue
   movesQueue.length = 0;
 }
 
@@ -310,7 +305,6 @@ function stepCompleted() {
   if (direction === "left") position.currentTile -= 1;
   if (direction === "right") position.currentTile += 1;
 
-  // Add new rows if the player is running out of them
   if (position.currentRow > metadata.length - 10) addRows();
 
   const scoreDOM = document.getElementById("score");
@@ -410,11 +404,11 @@ function Truck(initialTileIndex, direction, color) {
       color,
       flatShading: true,
       map: truckFrontTexture,
-    }), // front
+    }),
     new THREE.MeshLambertMaterial({
       color,
       flatShading: true,
-    }), // back
+    }),
     new THREE.MeshLambertMaterial({
       color,
       flatShading: true,
@@ -487,27 +481,22 @@ function calculateFinalPosition(currentPosition, moves) {
 }
 
 function endsUpInValidPosition(currentPosition, moves) {
-  // Calculate where the player would end up after the move
   const finalPosition = calculateFinalPosition(currentPosition, moves);
 
-  // Detect if we hit the edge of the board
   if (
     finalPosition.rowIndex === -1 ||
     finalPosition.tileIndex === minTileIndex - 1 ||
     finalPosition.tileIndex === maxTileIndex + 1
   ) {
-    // Invalid move, ignore move command
     return false;
   }
 
-  // Detect if we hit a tree
   const finalRow = metadata[finalPosition.rowIndex - 1];
   if (
     finalRow &&
     finalRow.type === "forest" &&
     finalRow.trees.some((tree) => tree.tileIndex === finalPosition.tileIndex)
   ) {
-    // Invalid move, ignore move command
     return false;
   }
 
@@ -606,13 +595,12 @@ function animatePlayer() {
 
   if (!moveClock.running) moveClock.start();
 
-  const stepTime = 0.2; // Seconds it takes to take a step
+  const stepTime = 0.2;
   const progress = Math.min(1, moveClock.getElapsedTime() / stepTime);
 
   setPosition(progress);
   setRotation(progress);
 
-  // Once a step has ended
   if (progress >= 1) {
     stepCompleted();
     moveClock.stop();
@@ -654,7 +642,6 @@ const clock = new THREE.Clock();
 function animateVehicles() {
   const delta = clock.getDelta();
 
-  // Animate cars and trucks
   metadata.forEach((rowData) => {
     if (rowData.type === "car" || rowData.type === "truck") {
       const beginningOfRow = (minTileIndex - 2) * tileSize;
@@ -697,16 +684,16 @@ document
 
 window.addEventListener("keydown", (event) => {
   if (event.key === "ArrowUp") {
-    event.preventDefault(); // Avoid scrolling the page
+    event.preventDefault();
     queueMove("forward");
   } else if (event.key === "ArrowDown") {
-    event.preventDefault(); // Avoid scrolling the page
+    event.preventDefault();
     queueMove("backward");
   } else if (event.key === "ArrowLeft") {
-    event.preventDefault(); // Avoid scrolling the page
+    event.preventDefault();
     queueMove("left");
   } else if (event.key === "ArrowRight") {
-    event.preventDefault(); // Avoid scrolling the page
+    event.preventDefault();
     queueMove("right");
   }
 });
